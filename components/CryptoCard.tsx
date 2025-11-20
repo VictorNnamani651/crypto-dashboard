@@ -1,11 +1,42 @@
-import { TrendingUp, TrendingDown } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { TrendingUp, TrendingDown, RefreshCcw } from "lucide-react";
 import type { CryptoData } from "@/types/crypto";
+import { fetchCryptoData } from "@/utils/api";
 
 interface CryptoCardProps {
   crypto: CryptoData;
 }
 
-export default function CryptoCard({ crypto }: CryptoCardProps) {
+export default function CryptoCard({ crypto: initialData }: CryptoCardProps) {
+  const [data, setData] = useState<CryptoData>(initialData);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    // Independent refresh cycle for this specific card
+    const refreshCard = async () => {
+      try {
+        setIsUpdating(true);
+        // Fetching fresh data
+        const allCrypto = await fetchCryptoData();
+        const freshData = allCrypto.find((c) => c.id === initialData.id);
+
+        if (freshData) {
+          setData(freshData);
+        }
+      } catch (error) {
+        console.error("Failed to refresh card", error);
+      } finally {
+        setTimeout(() => setIsUpdating(false), 1000); // Small delay for visual feedback
+      }
+    };
+
+    // Set interval for 30 seconds (independent of other cards)
+    const intervalId = setInterval(refreshCard, 30000);
+    return () => clearInterval(intervalId);
+  }, [initialData.id]);
+
   const formatPrice = (price: number): string => {
     if (price >= 1000) {
       return `$${price.toLocaleString(undefined, {
@@ -23,36 +54,48 @@ export default function CryptoCard({ crypto }: CryptoCardProps) {
     return `$${num.toFixed(2)}`;
   };
 
-  const priceChange = crypto.quotes.USD.percent_change_24h;
+  const priceChange = data.quotes.USD.percent_change_24h;
   const isPositive = priceChange >= 0;
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
+    <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 rounded-xl p-6 hover:bg-neutral-900/80 hover:border-amber-500/30 transition-all duration-300 hover:scale-105 group relative">
+      {/* Optional: Tiny indicator that the card is live/updating */}
+      <div
+        className={`absolute top-4 right-4 transition-opacity duration-500 ${
+          isUpdating ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <RefreshCcw className="w-3 h-3 text-amber-500 animate-spin" />
+      </div>
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-            {crypto.symbol}
+          {/* Gold Gradient Icon */}
+          <div className="w-10 h-10 bg-gradient-to-br from-amber-300 to-amber-600 rounded-full flex items-center justify-center text-neutral-950 font-bold text-sm shadow-lg shadow-amber-500/10">
+            {data.symbol}
           </div>
           <div>
-            <h3 className="text-white font-bold text-lg">{crypto.name}</h3>
-            <p className="text-slate-400 text-sm uppercase">{crypto.symbol}</p>
+            <h3 className="text-neutral-100 font-bold text-lg group-hover:text-amber-400 transition-colors">
+              {data.name}
+            </h3>
+            <p className="text-neutral-500 text-sm uppercase">{data.symbol}</p>
           </div>
         </div>
         {isPositive ? (
-          <TrendingUp className="w-6 h-6 text-green-400" />
+          <TrendingUp className="w-6 h-6 text-emerald-400" />
         ) : (
-          <TrendingDown className="w-6 h-6 text-red-400" />
+          <TrendingDown className="w-6 h-6 text-rose-400" />
         )}
       </div>
 
       <div className="space-y-3">
         <div>
-          <p className="text-3xl font-bold text-white">
-            {formatPrice(crypto.quotes.USD.price)}
+          <p className="text-3xl font-bold text-neutral-100">
+            {formatPrice(data.quotes.USD.price)}
           </p>
           <p
             className={`text-sm font-semibold ${
-              isPositive ? "text-green-400" : "text-red-400"
+              isPositive ? "text-emerald-400" : "text-rose-400"
             }`}
           >
             {isPositive ? "+" : ""}
@@ -60,22 +103,22 @@ export default function CryptoCard({ crypto }: CryptoCardProps) {
           </p>
         </div>
 
-        <div className="pt-3 border-t border-slate-700 space-y-2">
+        <div className="pt-3 border-t border-neutral-800 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Market Cap</span>
-            <span className="text-white font-semibold">
-              {formatNumber(crypto.quotes.USD.market_cap)}
+            <span className="text-neutral-500">Market Cap</span>
+            <span className="text-neutral-200 font-semibold">
+              {formatNumber(data.quotes.USD.market_cap)}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-slate-400">24h Volume</span>
-            <span className="text-white font-semibold">
-              {formatNumber(crypto.quotes.USD.volume_24h)}
+            <span className="text-neutral-500">24h Volume</span>
+            <span className="text-neutral-200 font-semibold">
+              {formatNumber(data.quotes.USD.volume_24h)}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Rank</span>
-            <span className="text-white font-semibold">#{crypto.rank}</span>
+            <span className="text-neutral-500">Rank</span>
+            <span className="text-neutral-200 font-semibold">#{data.rank}</span>
           </div>
         </div>
       </div>

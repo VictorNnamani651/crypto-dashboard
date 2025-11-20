@@ -14,6 +14,8 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Initial fetch ONLY.
+    // Subsequent updates are handled by individual CryptoCards.
     const fetchData = async () => {
       try {
         setError(null);
@@ -34,8 +36,7 @@ export default function HomePage() {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 60000); // refresh every minute
-    return () => clearInterval(interval);
+    // No setInterval here anymore.
   }, []);
 
   if (loading)
@@ -62,11 +63,13 @@ export default function HomePage() {
           {cryptoData
             .filter((c) => ["bitcoin", "ethereum", "solana"].includes(c.id))
             .map((crypto) => (
+              // Pass initial data; Card handles its own updates now
               <CryptoCard key={crypto.id} crypto={crypto} />
             ))}
         </div>
 
         {/* Liquidity Snapshot */}
+        {/* Note: This will now remain static until refresh, unlike the cards */}
         {globalData && <LiquiditySnapshot globalData={globalData} />}
 
         {/* Footer */}
