@@ -40,20 +40,20 @@ export default function HomePage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading market data...</div>
+      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center">
+        <div className="text-amber-400 text-xl">Loading market data...</div>
       </div>
     );
 
   if (error)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center">
         <div className="text-red-400 text-xl">Error: {error}</div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         <Header />
 
@@ -70,7 +70,7 @@ export default function HomePage() {
         {globalData && <LiquiditySnapshot globalData={globalData} />}
 
         {/* Footer */}
-        <div className="text-center text-slate-500 text-sm">
+        <div className="text-center text-neutral-500 text-sm">
           <p>Data updates every minute • Powered by CoinGecko API</p>
         </div>
       </div>
