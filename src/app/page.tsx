@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import CryptoCard from "@/components/CryptoCard";
-// import LiquiditySnapshot from '@/components/LiquiditySnapshot';
+import LiquiditySnapshot from "@/components/LiquiditySnapshot";
 import type { CryptoData, GlobalData } from "@/types/crypto";
+import { fetchCryptoData, fetchGlobalData } from "@/utils/api";
 
 export default function HomePage() {
   const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
@@ -13,52 +14,43 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setError(null);
+        setLoading(true);
+
+        const [cryptoJson, globalJson] = await Promise.all([
+          fetchCryptoData(),
+          fetchGlobalData(),
+        ]);
+
+        setCryptoData(cryptoJson);
+        setGlobalData(globalJson);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setLoading(false);
+      }
+    };
+
     fetchData();
-    const interval = setInterval(fetchData, 60000); // Refresh every minute
+    const interval = setInterval(fetchData, 60000); // refresh every minute
     return () => clearInterval(interval);
   }, []);
 
-  const fetchData = async (): Promise<void> => {
-    try {
-      setError(null);
-
-      // Fetch from our API routes
-      const [cryptoResponse, globalResponse] = await Promise.all([
-        fetch("/api/crypto"),
-        fetch("/api/global"),
-      ]);
-
-      if (!cryptoResponse.ok || !globalResponse.ok) {
-        throw new Error("Failed to fetch data");
-      }
-
-      const cryptoJson: CryptoData[] = await cryptoResponse.json();
-      const globalJson: GlobalData = await globalResponse.json();
-
-      setCryptoData(cryptoJson);
-      setGlobalData(globalJson);
-      setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (loading)
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading market data...</div>
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-red-400 text-xl">Error: {error}</div>
       </div>
     );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
@@ -73,11 +65,11 @@ export default function HomePage() {
         </div>
 
         {/* Liquidity Snapshot */}
-        {/* {globalData && <LiquiditySnapshot globalData={globalData} />} */}
+        {globalData && <LiquiditySnapshot globalData={globalData} />}
 
         {/* Footer */}
         <div className="text-center text-slate-500 text-sm">
-          <p>Data updates every minute • Powered by CoinPaprika API</p>
+          <p>Data updates every minute • Powered by CoinGecko API</p>
         </div>
       </div>
     </div>
