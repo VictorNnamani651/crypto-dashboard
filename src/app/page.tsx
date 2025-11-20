@@ -59,9 +59,11 @@ export default function HomePage() {
 
         {/* Market Data Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {cryptoData.map((crypto) => (
-            <CryptoCard key={crypto.id} crypto={crypto} />
-          ))}
+          {cryptoData
+            .filter((c) => ["bitcoin", "ethereum", "solana"].includes(c.id))
+            .map((crypto) => (
+              <CryptoCard key={crypto.id} crypto={crypto} />
+            ))}
         </div>
 
         {/* Liquidity Snapshot */}
