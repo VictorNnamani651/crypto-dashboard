@@ -14,10 +14,10 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const load = async () => {
+    const fetchData = async () => {
       try {
-        setLoading(true);
         setError(null);
+        setLoading(true);
 
         const [cryptoJson, globalJson] = await Promise.all([
           fetchCryptoData(),
@@ -26,78 +26,53 @@ export default function HomePage() {
 
         setCryptoData(cryptoJson);
         setGlobalData(globalJson);
+        setLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
         setLoading(false);
       }
     };
 
-    load();
-    const interval = setInterval(load, 60000);
+    fetchData();
+    const interval = setInterval(fetchData, 60000); // refresh every minute
     return () => clearInterval(interval);
   }, []);
 
-  // Loading Screen
   if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black flex items-center justify-center">
-        <div className="text-yellow-400 text-xl animate-pulse">
-          Loading market data...
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading market data...</div>
       </div>
     );
 
-  // Error Screen
   if (error)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black flex items-center justify-center">
-        <div className="text-red-400 text-xl font-semibold">Error: {error}</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-red-400 text-xl">Error: {error}</div>
       </div>
     );
 
-  // Main UI
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black p-6">
-      <div className="max-w-7xl mx-auto space-y-12">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         <Header />
 
         {/* Market Data Cards */}
-        <section>
-          <h2 className="text-2xl font-bold mb-4 text-yellow-400 tracking-wide">
-            Market Overview
-          </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {cryptoData
+            .filter((c) => ["bitcoin", "ethereum", "solana"].includes(c.id))
+            .map((crypto) => (
+              <CryptoCard key={crypto.id} crypto={crypto} />
+            ))}
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {cryptoData
-              .filter((c) => ["bitcoin", "ethereum", "solana"].includes(c.id))
-              .map((crypto) => (
-                <CryptoCard key={crypto.id} crypto={crypto} />
-              ))}
-          </div>
-        </section>
-
-        {/* Liquidity Section */}
-        <section>
-          <h2 className="text-2xl font-bold mb-4 text-yellow-400 tracking-wide">
-            Liquidity Snapshot
-          </h2>
-
-          {globalData && (
-            <div className="rounded-xl border border-yellow-900/40 bg-slate-900/40 backdrop-blur p-6 shadow-lg shadow-black/50">
-              <LiquiditySnapshot globalData={globalData} />
-            </div>
-          )}
-        </section>
+        {/* Liquidity Snapshot */}
+        {globalData && <LiquiditySnapshot globalData={globalData} />}
 
         {/* Footer */}
-        <footer className="text-center text-slate-500 text-sm pt-10">
-          <p className="tracking-wide">
-            Data updates every minute • Powered by{" "}
-            <span className="text-yellow-400">CoinGecko</span>
-          </p>
-        </footer>
+        <div className="text-center text-slate-500 text-sm">
+          <p>Data updates every minute • Powered by CoinGecko API</p>
+        </div>
       </div>
     </div>
   );

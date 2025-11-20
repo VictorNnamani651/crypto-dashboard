@@ -12,7 +12,7 @@ export async function GET() {
 
     const geckoData = await response.json();
 
-    // 🔥 Map CoinGecko → CoinPaprika-style CryptoData[]
+    // Map CoinGecko → CoinPaprika-style CryptoData[]
     const mapped: CryptoData[] = geckoData.map((coin: any) => ({
       id: coin.id,
       name: coin.name,
