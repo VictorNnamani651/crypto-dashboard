@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronUp, ChevronDown, ArrowUpDown } from "lucide-react"; // Optional: using Lucide icons for cleaner sort arrows if available, otherwise text is fine.
 import { CryptoData } from "@/types/crypto";
 
 interface TableProps {
@@ -27,82 +28,108 @@ export default function CoinsTable({ coins }: TableProps) {
     }
   };
 
+  // Helper to render the correct arrow based on state
+  const renderSortIcon = (columnKey: string) => {
+    if (sortBy !== columnKey)
+      return <ArrowUpDown className="w-4 h-4 opacity-20" />;
+    return sortOrder === "asc" ? (
+      <ChevronUp className="w-4 h-4 text-amber-400" />
+    ) : (
+      <ChevronDown className="w-4 h-4 text-amber-400" />
+    );
+  };
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-800 shadow-xl shadow-black/40">
-      <table className="w-full text-left">
-        <thead className="bg-slate-700/40 backdrop-blur">
+    <div className="overflow-x-auto rounded-xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm shadow-2xl shadow-black/20">
+      <table className="w-full text-left border-collapse">
+        <thead className="bg-neutral-950/50 border-b border-neutral-800 text-xs uppercase tracking-wider text-neutral-500 font-medium">
           <tr>
             <th
-              className="p-4 cursor-pointer"
+              className="p-5 cursor-pointer hover:text-neutral-300 transition-colors"
               onClick={() => handleSort("market_cap")}
             >
-              Market Cap{" "}
-              {sortBy === "market_cap" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              <div className="flex items-center gap-2">
+                Market Cap {renderSortIcon("market_cap")}
+              </div>
             </th>
 
-            <th className="p-4">Coin</th>
+            <th className="p-5">Coin</th>
 
             <th
-              className="p-4 cursor-pointer"
+              className="p-5 cursor-pointer hover:text-neutral-300 transition-colors"
               onClick={() => handleSort("price")}
             >
-              Price{" "}
-              {sortBy === "price" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              <div className="flex items-center gap-2">
+                Price {renderSortIcon("price")}
+              </div>
             </th>
 
             <th
-              className="p-4 cursor-pointer"
+              className="p-5 cursor-pointer hover:text-neutral-300 transition-colors"
               onClick={() => handleSort("volume_24h")}
             >
-              24h Volume{" "}
-              {sortBy === "volume_24h" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              <div className="flex items-center gap-2">
+                24h Volume {renderSortIcon("volume_24h")}
+              </div>
             </th>
 
             <th
-              className="p-4 cursor-pointer"
+              className="p-5 cursor-pointer hover:text-neutral-300 transition-colors"
               onClick={() => handleSort("percent_change_24h")}
             >
-              24h Change{" "}
-              {sortBy === "percent_change_24h"
-                ? sortOrder === "asc"
-                  ? "↑"
-                  : "↓"
-                : ""}
+              <div className="flex items-center gap-2">
+                24h Change {renderSortIcon("percent_change_24h")}
+              </div>
             </th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="divide-y divide-neutral-800">
           {sortedCoins.map((coin) => (
             <tr
               key={coin.id}
-              className="border-b border-slate-700 hover:bg-slate-700/50 hover:shadow-md hover:shadow-yellow-400/10 transition"
+              className="group hover:bg-neutral-800/40 transition-all duration-200"
             >
-              <td className="p-4">
+              <td className="p-5 text-neutral-300 font-medium">
                 ${coin.quotes.USD.market_cap.toLocaleString()}
               </td>
 
-              <td className="p-4 flex items-center gap-3">
-                <span className="font-semibold">{coin.name}</span>
-                <span className="uppercase text-slate-400 text-sm">
-                  {coin.symbol}
-                </span>
+              <td className="p-5">
+                <div className="flex items-center gap-3">
+                  {/* Coin Icon Placeholder/Text */}
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neutral-800 to-neutral-700 flex items-center justify-center text-xs font-bold text-amber-500 border border-neutral-700 group-hover:border-amber-500/30 transition-colors">
+                    {coin.symbol[0]}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-neutral-100 group-hover:text-amber-400 transition-colors">
+                      {coin.name}
+                    </span>
+                    <span className="text-xs text-neutral-500 uppercase">
+                      {coin.symbol}
+                    </span>
+                  </div>
+                </div>
               </td>
 
-              <td className="p-4">${coin.quotes.USD.price.toLocaleString()}</td>
+              <td className="p-5 text-neutral-200">
+                ${coin.quotes.USD.price.toLocaleString()}
+              </td>
 
-              <td className="p-4">
+              <td className="p-5 text-neutral-400">
                 ${coin.quotes.USD.volume_24h.toLocaleString()}
               </td>
 
-              <td
-                className={`p-4 font-semibold ${
-                  coin.quotes.USD.percent_change_24h >= 0
-                    ? "text-green-400"
-                    : "text-red-400"
-                }`}
-              >
-                {coin.quotes.USD.percent_change_24h.toFixed(2)}%
+              <td className="p-5">
+                <div
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    coin.quotes.USD.percent_change_24h >= 0
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                      : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                  }`}
+                >
+                  {coin.quotes.USD.percent_change_24h >= 0 ? "+" : ""}
+                  {coin.quotes.USD.percent_change_24h.toFixed(2)}%
+                </div>
               </td>
             </tr>
           ))}
