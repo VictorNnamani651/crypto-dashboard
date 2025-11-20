@@ -51,6 +51,10 @@ export default function TopCoinsPage() {
 
         <CoinsTable coins={filteredCoins} />
       </div>
+      {/* Footer */}
+      <div className="text-center text-slate-500 text-sm pt-4">
+        <p>Data updates every minute • Powered by CoinGecko API</p>
+      </div>
     </div>
   );
 }
