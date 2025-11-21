@@ -29,7 +29,7 @@ export default function TopCoinsPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center">
         <div className="flex items-center gap-3 text-amber-400 text-xl font-medium">
           <Loader2 className="w-6 h-6 animate-spin" />
           Loading top coins...
@@ -44,12 +44,12 @@ export default function TopCoinsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
+    <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
       <div className="max-w-7xl mx-auto space-y-10">
         <Header />
 
         <div className="space-y-6">
-          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neutral-100 via-amber-200 to-amber-500 w-fit">
+          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-neutral-100 via-amber-200 to-amber-500 w-fit">
             Top 20 Coins
           </h2>
 
