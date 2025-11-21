@@ -7,7 +7,7 @@ import {
   Coins,
   LayoutDashboard,
   TrendingUp,
-  Wallet,
+  House,
   Menu,
   X,
 } from "lucide-react";
@@ -56,6 +56,10 @@ export default function Header() {
 
         {/* --- DESKTOP NAVIGATION --- */}
         <nav className="hidden md:flex items-center gap-2 bg-neutral-900/50 p-1.5 rounded-full border border-neutral-800/50">
+          <Link href="/" className={linkClass("/")}>
+            <House className="w-4 h-4" />
+            Home
+          </Link>
           <Link href="/dash-board" className={linkClass("/dash-board")}>
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
@@ -65,14 +69,6 @@ export default function Header() {
             Top Coins
           </Link>
         </nav>
-
-        {/* --- DESKTOP CONNECT BUTTON --- */}
-        {/* <div className="hidden md:flex items-center">
-          <button className="flex items-center gap-2 bg-neutral-100 hover:bg-amber-400 hover:border-amber-400 text-neutral-950 px-5 py-2.5 rounded-lg font-bold text-sm transition-all duration-300 border border-neutral-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(251,191,36,0.4)]">
-            <Wallet className="w-4 h-4" />
-            <span>Connect</span>
-          </button>
-        </div> */}
 
         {/* --- MOBILE MENU TOGGLE --- */}
         <button
@@ -92,9 +88,13 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-20 left-0 w-full bg-neutral-950/95 backdrop-blur-xl border-b border-neutral-800 shadow-2xl animate-in slide-in-from-top-5 duration-200">
           <nav className="flex flex-col p-4 space-y-2">
+            <Link href="/" className={linkClass("/")}>
+              <House className="w-4 h-4" />
+              Home
+            </Link>
             <Link
-              href="/"
-              className={linkClass("/", true)}
+              href="/dash-board"
+              className={linkClass("/dash-board", true)}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <LayoutDashboard className="w-5 h-5" />
@@ -109,13 +109,6 @@ export default function Header() {
               <TrendingUp className="w-5 h-5" />
               Top Coins
             </Link>
-
-            {/* <div className="pt-4 pb-2">
-              <button className="w-full flex justify-center items-center gap-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 px-5 py-4 rounded-xl font-bold text-lg transition-all shadow-lg shadow-amber-500/20">
-                <Wallet className="w-5 h-5" />
-                <span>Connect Wallet</span>
-              </button>
-            </div> */}
           </nav>
         </div>
       )}
