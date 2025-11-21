@@ -1,18 +1,20 @@
 import { CryptoData } from "@/types/crypto";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    // UPDATED: Increased per_page to 50 to ensure we get USDT, USDC, DAI, etc.
     const response = await fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1"
+      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false",
+      { next: { revalidate: 60 } } // Optional: Cache for 60s
     );
 
     if (!response.ok) {
-      return Response.json({ error: "API failed" }, { status: 500 });
+      return NextResponse.json({ error: "API failed" }, { status: 500 });
     }
 
     const geckoData = await response.json();
 
-    // Map CoinGecko → CoinPaprika-style CryptoData[]
     const mapped: CryptoData[] = geckoData.map((coin: any) => ({
       id: coin.id,
       name: coin.name,
@@ -30,8 +32,8 @@ export async function GET() {
       },
     }));
 
-    return Response.json(mapped);
+    return NextResponse.json(mapped);
   } catch (error) {
-    return Response.json({ error: "Network error" }, { status: 500 });
+    return NextResponse.json({ error: "Network error" }, { status: 500 });
   }
 }

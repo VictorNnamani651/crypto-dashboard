@@ -1,42 +1,32 @@
-import type { CryptoData, GlobalData, CryptoQuote } from "@/types/crypto";
+import type { CryptoData, GlobalData } from "@/types/crypto";
 
-// Fetch global market data from CoinGecko and map it to your GlobalData interface
-export async function fetchGlobalData(): Promise<GlobalData> {
-  const res = await fetch("https://api.coingecko.com/api/v3/global");
-  const data = await res.json();
-  const d = data.data;
+// Helper to handle relative URLs in server vs client context if needed,
+// but for client-side fetching (useEffect), relative paths work fine.
 
-  return {
-    market_cap_usd: d.total_market_cap.usd,
-    volume_24h_usd: d.total_volume.usd,
-    bitcoin_dominance_percentage: d.market_cap_percentage.btc,
-    cryptocurrencies_number: d.active_cryptocurrencies,
-    market_cap_change_24h: d.market_cap_change_percentage_24h_usd,
-    volume_24h_change_24h: 0, // CoinGecko does not provide
-  };
+export async function fetchGlobalData(): Promise<GlobalData | null> {
+  try {
+    // UPDATED: Fetch from your INTERNAL server route
+    const res = await fetch("/api/global");
+    if (!res.ok) throw new Error("Global fetch failed");
+
+    // The server now returns the clean GlobalData object, so we just return it
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
-// Fetch top coins from CoinGecko and map to your CryptoData type
 export async function fetchCryptoData(): Promise<CryptoData[]> {
-  const res = await fetch(
-    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false"
-  );
-  const data = await res.json();
+  try {
+    // UPDATED: Fetch from your INTERNAL server route
+    const res = await fetch("/api/crypto");
+    if (!res.ok) throw new Error("Crypto fetch failed");
 
-  return data.map((coin: any) => ({
-    id: coin.id,
-    name: coin.name,
-    symbol: coin.symbol,
-    rank: coin.market_cap_rank,
-    quotes: {
-      USD: {
-        price: coin.current_price,
-        volume_24h: coin.total_volume,
-        market_cap: coin.market_cap,
-        percent_change_24h: coin.price_change_percentage_24h,
-        percent_change_7d: coin.price_change_percentage_7d_in_currency || 0,
-        percent_change_1h: coin.price_change_percentage_1h_in_currency || 0,
-      } as CryptoQuote,
-    },
-  }));
+    // The server now returns the clean CryptoData[] array
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
