@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -8,55 +9,67 @@ import {
   DollarSign,
   Wallet,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
-import { fetchGlobalData } from "@/utils/api"; // <-- import existing API util
+import { fetchGlobalData } from "@/utils/api";
+import type { GlobalData } from "@/types/crypto";
 
-interface QuickStat {
-  title: string;
-  value: string;
-  icon: React.ElementType;
-  className: string;
-}
-
-export default function HomePage() {
-  const [stats, setStats] = useState<QuickStat[]>([]);
+export default function LandingPage() {
+  const [globalData, setGlobalData] = useState<GlobalData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const globalData = await fetchGlobalData();
-
-        setStats([
-          {
-            title: "Total Market Cap",
-            value: `$${(globalData.market_cap_usd / 1e12).toFixed(2)}T`,
-            icon: DollarSign,
-            className: "bg-amber-500/10 text-amber-400",
-          },
-          {
-            title: "24h Volume",
-            value: `$${(globalData.volume_24h_usd / 1e9).toFixed(1)}B`,
-            icon: TrendingUp,
-            className: "bg-neutral-800 text-neutral-400",
-          },
-          {
-            title: "Active Coins",
-            value: `${globalData.cryptocurrencies_number.toLocaleString()}+`,
-            icon: BarChart3,
-            className: "bg-amber-500/10 text-amber-400",
-          },
-        ]);
-      } catch (error) {
-        console.error("Error fetching global data:", error);
-      }
-    }
-
+    const loadData = async () => {
+      const data = await fetchGlobalData();
+      setGlobalData(data);
+      setLoading(false);
+    };
     loadData();
   }, []);
 
+  // Helper to format numbers safely
+  const formatTrillion = (num: number | undefined) => {
+    if (!num) return "-";
+    return `$${(num / 1e12).toFixed(2)}T`;
+  };
+
+  const formatBillion = (num: number | undefined) => {
+    if (!num) return "-";
+    return `$${(num / 1e9).toFixed(2)}B`;
+  };
+
+  const formatCount = (num: number | undefined) => {
+    if (!num) return "-";
+    return num.toLocaleString();
+  };
+
+  // Dynamic Stats Array
+  const stats = [
+    {
+      title: "Total Market Cap",
+      // SAFE CHECK: We use optional chaining (?.) or fallback to 0 to satisfy TypeScript
+      value: formatTrillion(globalData?.market_cap_usd),
+      icon: DollarSign,
+      className: "bg-amber-500/10 text-amber-400",
+    },
+    {
+      title: "24h Volume",
+      value: formatBillion(globalData?.volume_24h_usd),
+      icon: TrendingUp,
+      className: "bg-neutral-800 text-neutral-400",
+    },
+    {
+      title: "Active Coins",
+      value: formatCount(globalData?.cryptocurrencies_number),
+      icon: BarChart3,
+      className: "bg-amber-500/10 text-amber-400",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex flex-col">
-      <Header />
+       <Header />
+      {/* Main Content Wrapper */}
       <main className="grow flex flex-col items-center justify-center px-6 py-20 relative overflow-hidden">
         {/* Background decorative blob */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-3xl -z-10" />
@@ -77,7 +90,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-              Track liquidity and market moves in a sleek, high‑contrast
+              Track liquidity and market moves in a sleek high‑contrast
               dashboard.
             </p>
           </div>
@@ -109,8 +122,12 @@ export default function HomePage() {
                     <stat.icon className="w-5 h-5" />
                   </div>
                 </div>
-                <div className="text-3xl font-bold text-neutral-100 group-hover:text-amber-100 transition-colors">
-                  {stat.value}
+                <div className="text-3xl font-bold text-neutral-100 group-hover:text-amber-100 transition-colors min-h-9">
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-neutral-600" />
+                  ) : (
+                    stat.value
+                  )}
                 </div>
               </div>
             ))}
