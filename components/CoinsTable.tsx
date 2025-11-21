@@ -97,7 +97,7 @@ export default function CoinsTable({ coins }: TableProps) {
               <td className="p-5">
                 <div className="flex items-center gap-3">
                   {/* Coin Icon Placeholder/Text */}
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neutral-800 to-neutral-700 flex items-center justify-center text-xs font-bold text-amber-500 border border-neutral-700 group-hover:border-amber-500/30 transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-neutral-800 to-neutral-700 flex items-center justify-center text-xs font-bold text-amber-500 border border-neutral-700 group-hover:border-amber-500/30 transition-colors">
                     {coin.symbol[0]}
                   </div>
                   <div className="flex flex-col">
