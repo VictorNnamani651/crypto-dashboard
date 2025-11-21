@@ -7,7 +7,7 @@ import LiquiditySnapshot from "@/components/LiquiditySnapshot";
 import type { CryptoData, GlobalData } from "@/types/crypto";
 import { fetchCryptoData, fetchGlobalData } from "@/utils/api";
 
-export default function HomePage() {
+export default function DashBoard() {
   const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
   const [globalData, setGlobalData] = useState<GlobalData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -57,7 +57,25 @@ export default function HomePage() {
     <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         <Header />
-        <h1 className="text-2xl font-bold text-neutral-100">HOME PAGE</h1>
+
+        {/* Market Data Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {cryptoData
+            .filter((c) => ["bitcoin", "ethereum", "solana"].includes(c.id))
+            .map((crypto) => (
+              // Pass initial data; Card handles its own updates now
+              <CryptoCard key={crypto.id} crypto={crypto} />
+            ))}
+        </div>
+
+        {/* Liquidity Snapshot */}
+        {/* Note: This will now remain static until refresh, unlike the cards */}
+        {globalData && <LiquiditySnapshot globalData={globalData} />}
+
+        {/* Footer */}
+        <div className="text-center text-neutral-500 text-sm">
+          <p>Data updates every minute • Powered by CoinGecko API</p>
+        </div>
       </div>
     </div>
   );
