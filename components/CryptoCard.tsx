@@ -71,7 +71,7 @@ export default function CryptoCard({ crypto: initialData }: CryptoCardProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           {/* Gold Gradient Icon */}
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-300 to-amber-600 rounded-full flex items-center justify-center text-neutral-950 font-bold text-sm shadow-lg shadow-amber-500/10">
+          <div className="w-10 h-10 bg-linear-to-br from-amber-300 to-amber-600 rounded-full flex items-center justify-center text-neutral-950 font-bold text-sm shadow-lg shadow-amber-500/10">
             {data.symbol}
           </div>
           <div>
