@@ -46,17 +46,17 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         {/* --- LOGO --- */}
         <Link href="/" className="flex items-center gap-3 group z-50">
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all duration-300">
+          <div className="w-10 h-10 bg-linear-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all duration-300">
             <Coins className="w-6 h-6 text-neutral-950 fill-neutral-950" />
           </div>
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neutral-100 via-amber-200 to-amber-500 tracking-tight">
+          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-neutral-100 via-amber-200 to-amber-500 tracking-tight">
             CryptoDash
           </h1>
         </Link>
 
         {/* --- DESKTOP NAVIGATION --- */}
         <nav className="hidden md:flex items-center gap-2 bg-neutral-900/50 p-1.5 rounded-full border border-neutral-800/50">
-          <Link href="/" className={linkClass("/")}>
+          <Link href="/dash-board" className={linkClass("/dash-board")}>
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
           </Link>
